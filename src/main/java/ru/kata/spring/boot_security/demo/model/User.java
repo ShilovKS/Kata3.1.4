@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.catalina.realm.UserDatabaseRealm.getRoles;
 
@@ -145,4 +146,5 @@ public class User implements UserDetails {
         }
         roles.add(role_admin);
     }
+
 }

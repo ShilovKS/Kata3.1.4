@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +37,6 @@ public class AdminController {
         User startUser = new User("admin", "admin", 3,"admin", "admin");
         startUser.addRoleToUser(roleService.findByName("ROLE_ADMIN"));
         userService.addUser(startUser);
-
-    }
-
-    @GetMapping("/new")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
-        List<Role> roles = roleService.getAllRoles();
-        model.addAttribute("allRoles", roles);
-        return "adminViews/addUser";
     }
 
     @PostMapping()
@@ -53,13 +45,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/{id}/edit")
-    public String editUser(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("editUser", userService.getUser(id));
-        List<Role> roles = roleService.getAllRoles();
-        model.addAttribute("allRoles", roles);
-        return "adminViews/editUser";
-    }
+
 
     @PutMapping()
     public String update(@ModelAttribute("user") User user) {
@@ -67,23 +53,25 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping()
     public String deleteUser(@RequestParam("id") Long id) {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
 
     @GetMapping()
-    public String showAllUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        return "adminViews/showAllUsers";
+    public String showAllUsers(Model model, Authentication authentication) {
+        model.addAttribute("autUser", userService.findByEmail(authentication.getName()));
+        model.addAttribute("listUsers", userService.getAllUsers());
+
+        List<Role> roles = (List<Role>) roleService.getAllRoles();
+        model.addAttribute("allRoles", roles);
+
+        model.addAttribute("newUser", new User());
+        return "adminPanel";
     }
 
-    @GetMapping("/{id}")
-    public String showOneUsers(Model model, @PathVariable("id") Long id)  {
-        model.addAttribute("user", userService.getUser(id));
-        return "userViews/oneUser";
-    }
+
 
 
 }

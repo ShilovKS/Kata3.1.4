@@ -20,7 +20,7 @@ public class UsersController {
     public String showOneUsers(Model model, Authentication authentication) {
         User user = userService.findByEmail(authentication.getName());
         model.addAttribute("user", user);
-        return "userViews/oneUser";
+        return "userPanel";
     }
 
 }
